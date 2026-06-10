@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# figma scratch (design pulls, screenshots)
+/.figma-tmp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

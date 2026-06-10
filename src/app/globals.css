@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brand palette (extracted from the Travelora Figma) */
+  --color-navy: #001c8e;
+  --color-primary: #febc12;
+  --color-primary-dark: #fcb017;
+  --color-amber-soft: #ffb71f;
+  --color-ink: #373737;
+  --color-muted: #eeeeee;
+
+  --color-background: #ffffff;
+  --color-foreground: #373737;
+
+  /* Poppins comes from next/font (sets --font-poppins on <html>) */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Figma content width: 1240px inside the 1440px frame */
+  --container-content: 1240px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Shared centered content container */
+.container-content {
+  width: 100%;
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding-inline: 1rem;
 }
