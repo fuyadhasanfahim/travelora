@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   IconStarFilled,
   IconMapPin,
@@ -139,7 +139,7 @@ const PRICE_OPTIONS = [
   { label: "$800 & above", value: "800+" },
 ];
 
-const cardVariant = {
+const cardVariant: Variants = {
   hidden: { opacity: 0, y: 36 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };

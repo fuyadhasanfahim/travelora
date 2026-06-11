@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { IconSend, IconPlayerPlayFilled } from "@tabler/icons-react";
 import TourSearch from "./tour-search";
 
@@ -16,7 +16,7 @@ const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
 };
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };

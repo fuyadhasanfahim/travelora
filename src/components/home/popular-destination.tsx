@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { IconArrowUpRight, IconMapPin } from "@tabler/icons-react";
 
 type Destination = { name: string; image: string; tours: number; country: string };
@@ -18,7 +18,7 @@ const DESTINATIONS: Destination[] = [
   { name: "Statue of Liberty", image: "/images/destinations/statue-of-liberty.png", tours: 71, country: "New York, USA" },
 ];
 
-const pill = {
+const pill: Variants = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   IconStarFilled,
   IconStarHalfFilled,
@@ -27,7 +27,7 @@ const REVIEWS: Review[] = [
 ];
 
 const grid = { hidden: {}, show: { transition: { staggerChildren: 0.14 } } };
-const card = {
+const card: Variants = {
   hidden: { opacity: 0, y: 36 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
 };

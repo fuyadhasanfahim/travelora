@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   IconArrowRight,
   IconArrowUpRight,
@@ -47,7 +47,7 @@ const POSTS: Post[] = [
 ];
 
 const grid = { hidden: {}, show: { transition: { staggerChildren: 0.14 } } };
-const card = {
+const card: Variants = {
   hidden: { opacity: 0, y: 34 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
 };

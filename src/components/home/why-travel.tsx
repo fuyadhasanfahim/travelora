@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   IconShieldCheck,
   IconUserStar,
@@ -32,7 +32,7 @@ const grid = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
-const tile = {
+const tile: Variants = {
   hidden: { opacity: 0, y: 26, scale: 0.96 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
 };
