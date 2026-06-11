@@ -1,36 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconArrowUpRight, IconMapPin } from "@tabler/icons-react";
 
-type Destination = { name: string; image: string; tours: number };
+type Destination = { name: string; image: string; tours: number; country: string };
 
 const DESTINATIONS: Destination[] = [
-  { name: "Opera House", image: "/images/destinations/opera-house.png", tours: 78 },
-  { name: "Great Wall", image: "/images/destinations/great-wall.png", tours: 64 },
-  { name: "Taj Mahal", image: "/images/destinations/taj-mahal.png", tours: 92 },
-  { name: "Colosseum", image: "/images/destinations/colosseum.png", tours: 47 },
-  { name: "Eiffel Tower", image: "/images/destinations/eiffel-tower.png", tours: 110 },
-  { name: "Machu Picchu", image: "/images/destinations/machu-picchu.png", tours: 53 },
-  { name: "Grand Canyon", image: "/images/destinations/grand-canyon.png", tours: 38 },
-  { name: "Statue of Liberty", image: "/images/destinations/statue-of-liberty.png", tours: 71 },
+  { name: "Opera House", image: "/images/destinations/opera-house.png", tours: 78, country: "Sydney, Australia" },
+  { name: "Great Wall", image: "/images/destinations/great-wall.png", tours: 64, country: "Beijing, China" },
+  { name: "Taj Mahal", image: "/images/destinations/taj-mahal.png", tours: 92, country: "Agra, India" },
+  { name: "Colosseum", image: "/images/destinations/colosseum.png", tours: 47, country: "Rome, Italy" },
+  { name: "Eiffel Tower", image: "/images/destinations/eiffel-tower.png", tours: 110, country: "Paris, France" },
+  { name: "Machu Picchu", image: "/images/destinations/machu-picchu.png", tours: 53, country: "Cusco, Peru" },
+  { name: "Grand Canyon", image: "/images/destinations/grand-canyon.png", tours: 38, country: "Arizona, USA" },
+  { name: "Statue of Liberty", image: "/images/destinations/statue-of-liberty.png", tours: 71, country: "New York, USA" },
 ];
 
-const card = {
+const pill = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 export default function PopularDestination() {
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const scrollByCards = (dir: 1 | -1) => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
-  };
+  const [active, setActive] = useState(0);
 
   return (
     <section className="py-16 sm:py-20 lg:py-24">
@@ -43,72 +37,134 @@ export default function PopularDestination() {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-xl text-center"
         >
-          <h2 className="text-3xl font-semibold text-[#6e6e6e] sm:text-4xl lg:text-[46px]">
+          <span className="inline-flex items-center gap-2 rounded-full bg-navy/[0.06] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-navy">
+            <span className="size-1.5 rounded-full bg-primary" />
+            Where to next
+          </span>
+          <h2 className="mt-4 text-3xl font-semibold text-[#4f4f4f] sm:text-4xl lg:text-[46px]">
             Popular destination
           </h2>
           <p className="mt-3 text-base text-[#8e8e8e] sm:text-lg">
-            Navigate the globe with confidence
+            Navigate the globe with confidence — hover a place to take a closer look.
           </p>
         </motion.div>
 
-        {/* Slider */}
-        <div className="relative mt-10 lg:mt-14">
-          {/* Arrows (desktop) */}
-          <button
-            type="button"
-            aria-label="Previous destinations"
-            onClick={() => scrollByCards(-1)}
-            className="absolute -left-4 top-[40%] z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white text-ink shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all hover:bg-primary hover:text-black lg:grid"
-          >
-            <IconChevronLeft className="size-5" stroke={2} />
-          </button>
-          <button
-            type="button"
-            aria-label="Next destinations"
-            onClick={() => scrollByCards(1)}
-            className="absolute -right-4 top-[40%] z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-white text-ink shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all hover:bg-primary hover:text-black lg:grid"
-          >
-            <IconChevronRight className="size-5" stroke={2} />
-          </button>
-
-          <motion.div
-            ref={trackRef}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ staggerChildren: 0.08 }}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 sm:gap-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {DESTINATIONS.map((d) => (
-              <motion.div
+        {/* Desktop: expanding panels */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ staggerChildren: 0.06 }}
+          className="mt-12 hidden h-[440px] gap-3 lg:flex"
+        >
+          {DESTINATIONS.map((d, i) => {
+            const isActive = i === active;
+            return (
+              <motion.button
                 key={d.name}
-                variants={card}
-                whileHover={{ scale: 1.07, y: -8 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group w-[150px] shrink-0 origin-bottom cursor-pointer snap-start sm:w-[170px] lg:w-[187px]"
+                type="button"
+                variants={pill}
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                animate={{ flexGrow: isActive ? 4.2 : 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 26 }}
+                style={{ flexBasis: 0 }}
+                className="group relative min-w-0 cursor-pointer overflow-hidden rounded-[28px] shadow-[0_18px_45px_-22px_rgba(0,0,0,0.5)] ring-1 ring-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-navy"
               >
-                <div className="relative aspect-[187/254] w-full overflow-hidden rounded-full ring-1 ring-black/5">
-                  <Image
-                    src={d.image}
-                    alt={d.name}
-                    fill
-                    sizes="187px"
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                </div>
-                <div className="mt-4 text-center">
-                  <p className="text-base font-medium text-[#747474] transition-colors group-hover:text-navy sm:text-lg">
-                    {d.name}
-                  </p>
-                  <p className="mt-1 text-sm text-[#b9b9b9] sm:text-base">
-                    {d.tours} Tour
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+                <Image
+                  src={d.image}
+                  alt={d.name}
+                  fill
+                  sizes="(max-width: 1024px) 0px, 40vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                {/* Gradient */}
+                <div
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    isActive
+                      ? "bg-gradient-to-t from-black/75 via-black/20 to-transparent"
+                      : "bg-gradient-to-t from-black/60 to-black/10"
+                  }`}
+                />
+
+                {/* Tours chip (active only) */}
+                <motion.span
+                  animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : -6 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-navy shadow-sm backdrop-blur"
+                >
+                  <IconMapPin className="size-3.5" stroke={2} />
+                  {d.tours} Tours
+                </motion.span>
+
+                {/* Collapsed label — vertical */}
+                <span
+                  className={`absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-base font-semibold text-white transition-opacity duration-200 [writing-mode:vertical-rl] ${
+                    isActive ? "opacity-0" : "opacity-100"
+                  }`}
+                >
+                  {d.name}
+                </span>
+
+                {/* Expanded content */}
+                <motion.div
+                  animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 12 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-6 text-left"
+                >
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-1.5 text-xs font-medium text-white/80">
+                      <IconMapPin className="size-3.5" stroke={1.8} />
+                      <span className="truncate">{d.country}</span>
+                    </p>
+                    <p className="mt-1 truncate text-2xl font-semibold text-white">
+                      {d.name}
+                    </p>
+                  </div>
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-black shadow-lg transition-transform duration-300 group-hover:rotate-45">
+                    <IconArrowUpRight className="size-5" stroke={2} />
+                  </span>
+                </motion.div>
+              </motion.button>
+            );
+          })}
+        </motion.div>
+
+        {/* Mobile / tablet: capsule slider */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ staggerChildren: 0.07 }}
+          className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 sm:gap-6 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {DESTINATIONS.map((d) => (
+            <motion.div
+              key={d.name}
+              variants={pill}
+              whileHover={{ scale: 1.05, y: -8 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="group w-[150px] shrink-0 origin-bottom cursor-pointer snap-start sm:w-[180px]"
+            >
+              <div className="relative aspect-[187/254] w-full overflow-hidden rounded-full ring-1 ring-black/5">
+                <Image
+                  src={d.image}
+                  alt={d.name}
+                  fill
+                  sizes="180px"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-base font-medium text-[#747474] transition-colors group-hover:text-navy sm:text-lg">
+                  {d.name}
+                </p>
+                <p className="mt-1 text-sm text-[#b9b9b9] sm:text-base">{d.tours} Tours</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
