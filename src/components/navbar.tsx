@@ -17,7 +17,7 @@ const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Tour Package", href: "/tours" },
-  { label: "Booking", href: "/payment" },
+  { label: "Booking", href: "/booking" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];

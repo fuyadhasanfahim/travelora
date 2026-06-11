@@ -15,14 +15,20 @@ export default function VideoSection() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative aspect-[1242/610] w-full overflow-hidden rounded-[28px] shadow-[0_30px_70px_-34px_rgba(0,0,0,0.5)] ring-1 ring-black/5"
         >
-          <Image
-            src="/images/about/video-bg.jpg"
-            alt="Watch our travel video"
-            fill
-            sizes="(max-width: 1280px) 100vw, 1240px"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/15" />
+          <motion.div
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src="/images/about/video-bg.jpg"
+              alt="Watch our travel video"
+              fill
+              sizes="(max-width: 1280px) 100vw, 1240px"
+              className="object-cover"
+            />
+          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-black/15" />
 
           {/* Play button with rotating text */}
           <button
@@ -41,6 +47,8 @@ export default function VideoSection() {
                 </textPath>
               </text>
             </svg>
+            {/* Pulse ring */}
+            <span className="absolute left-1/2 top-1/2 size-14 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-white/40 sm:size-16" />
             {/* Center play */}
             <span className="absolute left-1/2 top-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-navy shadow-lg transition-transform duration-300 group-hover:scale-110 sm:size-16">
               <IconPlayerPlayFilled className="size-6 translate-x-0.5 sm:size-7" />

@@ -7,6 +7,8 @@ import {
   IconUserStar,
   IconHeadset,
   IconRosetteDiscount,
+  IconWorldPin,
+  IconQuote,
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
 
@@ -29,8 +31,12 @@ const tile: Variants = {
 
 export default function AboutSection() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="container-content">
+    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
+      {/* Decorative depth */}
+      <span className="pointer-events-none absolute -left-24 top-24 size-72 rounded-full bg-primary/[0.08] blur-3xl" />
+      <span className="pointer-events-none absolute -right-24 bottom-10 size-80 rounded-full bg-navy/[0.06] blur-3xl" />
+
+      <div className="container-content relative">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           {/* Left: heading + cards */}
           <div>
@@ -40,11 +46,22 @@ export default function AboutSection() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="inline-flex items-center rounded-full bg-amber-soft px-4 py-1.5 text-sm font-medium text-black">
+              <span className="inline-flex items-center gap-2 rounded-full bg-amber-soft px-4 py-1.5 text-sm font-medium text-black shadow-[0_8px_18px_-10px_rgba(254,188,18,0.9)]">
+                <span className="size-1.5 rounded-full bg-black/70" />
                 About us
               </span>
               <h2 className="mt-5 text-3xl font-semibold leading-tight text-[#6e6e6e] sm:text-4xl lg:text-[44px]">
-                We Help You <span className="font-bold text-[#3f3f3f]">Planning</span>
+                We Help You{" "}
+                <span className="relative font-bold text-[#3f3f3f]">
+                  Planning
+                  <motion.span
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+                    className="absolute -bottom-1 left-0 h-1 w-full origin-left rounded-full bg-gradient-to-r from-primary to-amber-soft"
+                  />
+                </span>
                 <br className="hidden sm:block" /> Your Journey
               </h2>
             </motion.div>
@@ -69,7 +86,7 @@ export default function AboutSection() {
                   >
                     <span className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-white/15 blur-2xl transition-all duration-500 group-hover:bg-white/25" />
                     <div className="relative">
-                      <span className="grid size-12 place-items-center rounded-2xl bg-white/20 ring-1 ring-white/30 backdrop-blur-sm">
+                      <span className="grid size-12 place-items-center rounded-2xl bg-white/20 ring-1 ring-white/30 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
                         <Icon className="size-6" stroke={1.8} />
                       </span>
                       <h3 className="mt-5 text-xl font-semibold leading-snug">{p.title}</h3>
@@ -93,9 +110,10 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.55, ease: "easeOut" }}
-              className="rounded-2xl border-l-4 border-amber-soft bg-amber-soft/10 p-6"
+              className="relative overflow-hidden rounded-2xl border-l-4 border-amber-soft bg-gradient-to-br from-amber-soft/[0.14] to-amber-soft/[0.04] p-6 pl-7"
             >
-              <p className="text-lg font-medium leading-relaxed text-[#6e6e6e] sm:text-xl">
+              <IconQuote className="absolute -right-1 -top-1 size-16 text-primary/15" />
+              <p className="relative text-lg font-medium leading-relaxed text-[#6e6e6e] sm:text-xl">
                 Our mission is to create memories that last a lifetime for every
                 traveler who chooses us.
               </p>
@@ -108,15 +126,38 @@ export default function AboutSection() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="relative flex-1 overflow-hidden rounded-[28px] bg-gradient-to-b from-[#eaf4ff] to-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.4)] ring-1 ring-black/5"
             >
-              <div className="relative aspect-[608/440] w-full sm:aspect-[608/496]">
-                <Image
-                  src="/images/about/mission.jpg"
-                  alt="Travel the world with Travelora"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 600px"
-                  className="object-cover"
-                />
+              <div className="relative aspect-[608/440] w-full overflow-hidden sm:aspect-[608/496]">
+                <motion.div
+                  animate={{ scale: [1, 1.06, 1] }}
+                  transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src="/images/about/mission.jpg"
+                    alt="Travel the world with Travelora"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 600px"
+                    className="object-cover"
+                  />
+                </motion.div>
               </div>
+
+              {/* Floating stat badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="absolute bottom-5 left-5 flex items-center gap-3 rounded-2xl bg-white/95 p-3.5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.4)] backdrop-blur"
+              >
+                <span className="grid size-11 place-items-center rounded-xl bg-navy/[0.08] text-navy">
+                  <IconWorldPin className="size-6" stroke={1.7} />
+                </span>
+                <div>
+                  <p className="text-lg font-semibold leading-none text-ink">120+</p>
+                  <p className="mt-1 text-xs text-[#9a9a9a]">Destinations</p>
+                </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>

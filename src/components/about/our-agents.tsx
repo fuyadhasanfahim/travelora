@@ -23,8 +23,10 @@ const card: Variants = {
 
 export default function OurAgents() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="container-content">
+    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
+      <span className="pointer-events-none absolute -left-24 top-20 size-72 rounded-full bg-navy/[0.06] blur-3xl" />
+      <span className="pointer-events-none absolute -right-24 bottom-10 size-80 rounded-full bg-primary/[0.08] blur-3xl" />
+      <div className="container-content relative">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -57,9 +59,11 @@ export default function OurAgents() {
             <motion.div
               key={i}
               variants={card}
-              whileHover={{ y: -8 }}
+              whileHover={{ y: -10 }}
               transition={{ type: "spring", stiffness: 300, damping: 22 }}
-              className="group relative aspect-[292/389] overflow-hidden rounded-[28px] shadow-[0_20px_50px_-26px_rgba(0,0,0,0.5)] ring-1 ring-black/5"
+              className={`group relative aspect-[292/389] overflow-hidden rounded-[28px] shadow-[0_20px_50px_-26px_rgba(0,0,0,0.5)] ring-1 ring-black/5 ${
+                i % 2 === 1 ? "lg:translate-y-7" : ""
+              }`}
             >
               <Image
                 src={src}

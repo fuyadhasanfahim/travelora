@@ -14,15 +14,22 @@ export default function AboutCta() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative overflow-hidden rounded-[28px] shadow-[0_30px_70px_-34px_rgba(0,0,0,0.5)]"
         >
-          <Image
-            src="/images/about/cta-bg.jpg"
-            alt=""
-            fill
-            sizes="(max-width: 1280px) 100vw, 1240px"
-            className="object-cover"
-          />
+          <motion.div
+            animate={{ scale: [1, 1.07, 1] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src="/images/about/cta-bg.jpg"
+              alt=""
+              fill
+              sizes="(max-width: 1280px) 100vw, 1240px"
+              className="object-cover"
+            />
+          </motion.div>
           {/* Overlay (darker on the left for text) */}
           <div className="absolute inset-0 bg-gradient-to-r from-navy/85 via-navy/55 to-navy/20" />
+          <span className="pointer-events-none absolute -right-10 -top-10 size-56 rounded-full bg-primary/20 blur-3xl" />
 
           <div className="relative flex flex-col items-start gap-6 px-7 py-10 sm:px-12 lg:flex-row lg:items-center lg:justify-between lg:px-16 lg:py-14">
             <h2 className="max-w-2xl text-2xl font-bold leading-snug text-white sm:text-3xl lg:text-[34px]">
