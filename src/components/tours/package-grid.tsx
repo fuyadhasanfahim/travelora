@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import {
   IconStarFilled,
@@ -69,8 +70,11 @@ export default function PackageGrid() {
             variants={card}
             whileHover={{ y: -8 }}
             transition={{ type: "spring", stiffness: 300, damping: 22 }}
-            className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_12px_40px_-22px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.04] transition-shadow duration-300 hover:shadow-[0_28px_60px_-26px_rgba(0,28,142,0.4)]"
+            className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_12px_40px_-22px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.04] transition-shadow duration-300 hover:shadow-[0_28px_60px_-26px_rgba(0,28,142,0.4)]"
           >
+            {/* Whole-card link */}
+            <Link href="/tours/california-sunset" aria-label={p.title} className="absolute inset-0 z-10" />
+
             <div className="relative aspect-[397/269] w-full overflow-hidden">
               <Image
                 src={p.image}
@@ -87,13 +91,9 @@ export default function PackageGrid() {
               >
                 {p.badge.label}
               </span>
-              <button
-                type="button"
-                aria-label="Save"
-                className="absolute right-4 top-4 grid size-9 place-items-center rounded-full bg-white/90 text-ink/70 shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-rose-500"
-              >
+              <span className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-white/90 text-ink/70 shadow-sm backdrop-blur transition-colors group-hover:text-rose-500">
                 <IconHeart className="size-[18px]" stroke={1.8} />
-              </button>
+              </span>
             </div>
 
             <div className="flex flex-1 flex-col p-5">
@@ -123,12 +123,9 @@ export default function PackageGrid() {
                   ${p.price}
                   <span className="text-sm font-normal text-[#a1a1a1]">/ Person</span>
                 </p>
-                <button
-                  type="button"
-                  className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
-                >
+                <span className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black transition-all group-hover:-translate-y-0.5 group-hover:bg-primary-dark">
                   Book Now
-                </button>
+                </span>
               </div>
             </div>
           </motion.article>
