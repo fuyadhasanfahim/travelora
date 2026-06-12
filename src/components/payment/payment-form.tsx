@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   IconBuildingBank,
@@ -12,6 +13,7 @@ import {
   IconEdit,
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
+import { TOURS, getTour } from "@/data/tours";
 
 type IconType = ComponentType<{ className?: string; stroke?: number }>;
 
@@ -52,6 +54,24 @@ function Field({
 
 export default function PaymentForm() {
   const [method, setMethod] = useState("bank");
+  const sp = useSearchParams();
+
+  const tourSlug = sp.get("tour");
+  const adult = Math.max(0, Number(sp.get("adult") || 2));
+  const child = Math.max(0, Number(sp.get("child") || 1));
+  const extra = sp.get("extra") === "1";
+  const couponDiscount = 0;
+
+  const tour = useMemo(
+    () => (tourSlug ? getTour(tourSlug) : null) ?? TOURS[0],
+    [tourSlug],
+  );
+
+  const adultPrice = tour.price;
+  const childPrice = Math.round(tour.price * 0.65);
+  const extraPrice = extra ? 25 : 0;
+  const packageFee = adult * adultPrice + child * childPrice;
+  const totalPrice = packageFee + extraPrice - couponDiscount;
 
   return (
     <section className="py-12 sm:py-16 lg:py-20">
@@ -170,15 +190,15 @@ export default function PaymentForm() {
               {/* Item */}
               <div className="flex gap-4">
                 <span className="relative h-[70px] w-[90px] shrink-0 overflow-hidden rounded-xl">
-                  <Image src="/images/packages/pkg-1.png" alt="California Sunset/Twilight Boat Cruise" fill sizes="90px" className="object-cover" />
+                  <Image src={tour.image} alt={tour.title} fill sizes="90px" className="object-cover" />
                 </span>
                 <div>
                   <h3 className="text-base font-semibold leading-snug text-[#6e6e6e]">
-                    California Sunset/Twilight Boat Cruise
+                    {tour.title}
                   </h3>
                   <p className="mt-1 flex items-center gap-1 text-sm text-[#a1a1a1]">
                     <IconMapPin className="size-4" stroke={1.7} />
-                    Jamica, Kenya
+                    {tour.location}
                   </p>
                 </div>
               </div>
@@ -200,8 +220,8 @@ export default function PaymentForm() {
               {/* Details */}
               <h4 className="text-lg font-semibold text-[#6e6e6e]">Details</h4>
               <div className="mt-3 space-y-2.5 text-sm">
-                <Row label="Adult" value="2" />
-                <Row label="Children" value="1" />
+                <Row label={`Adult ($${adultPrice})`} value={String(adult)} />
+                <Row label={`Children ($${childPrice})`} value={String(child)} />
               </div>
 
               <Divider />
@@ -223,12 +243,12 @@ export default function PaymentForm() {
               {/* Price details */}
               <h4 className="text-lg font-semibold text-[#6e6e6e]">Price details</h4>
               <div className="mt-3 space-y-2.5 text-sm">
-                <Row label="Package Fee" value="$355" />
-                <Row label="Extra Fee" value="$50" />
+                <Row label="Package Fee" value={`$${packageFee}`} />
+                <Row label="Extra Fee" value={`$${extraPrice}`} />
               </div>
               <div className="mt-4 flex items-center justify-between border-t border-[#e4e4e4] pt-4">
-                <span className="text-lg font-semibold text-[#6e6e6e]">Price details</span>
-                <span className="text-lg font-semibold text-[#6e6e6e]">$405</span>
+                <span className="text-lg font-semibold text-[#6e6e6e]">Total</span>
+                <span className="text-lg font-semibold text-navy">${totalPrice}</span>
               </div>
             </div>
           </motion.aside>

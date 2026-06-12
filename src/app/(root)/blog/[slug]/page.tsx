@@ -1,22 +1,41 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import BlogHero from "@/components/blog/blog-hero";
 import BlogDetail from "@/components/blog/blog-detail";
+import { BLOGS, getBlog } from "@/data/blogs";
 
-const TITLE = "Ultimate Dubai Travel Guide for First-Time Travelers";
+type Params = { params: Promise<{ slug: string }> };
 
-export const metadata: Metadata = {
-  title: `${TITLE} — Travelora Blog`,
-  description: "A first-timer's guide to exploring Dubai with Travelora.",
-};
+export function generateStaticParams() {
+  return BLOGS.map((b) => ({ slug: b.slug }));
+}
 
-export default function BlogDetailPage() {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const blog = getBlog(slug);
+  if (!blog) return { title: "Article not found — Travelora" };
+  return {
+    title: `${blog.title} — Travelora Blog`,
+    description: blog.excerpt,
+  };
+}
+
+export default async function BlogDetailPage({ params }: Params) {
+  const { slug } = await params;
+  const blog = getBlog(slug);
+  if (!blog) notFound();
+
   return (
     <>
       <BlogHero
-        title={TITLE}
-        crumbs={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: TITLE }]}
+        title={blog.title}
+        crumbs={[
+          { label: "Home", href: "/" },
+          { label: "Blog", href: "/blog" },
+          { label: blog.title },
+        ]}
       />
-      <BlogDetail />
+      <BlogDetail blog={blog} />
     </>
   );
 }

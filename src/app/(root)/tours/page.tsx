@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import TourHero from "@/components/tours/tour-hero";
 import TourSidebar from "@/components/tours/tour-sidebar";
 import PackageGrid from "@/components/tours/package-grid";
@@ -13,13 +14,19 @@ export const metadata: Metadata = {
 export default function ToursPage() {
   return (
     <>
-      <TourHero />
+      <Suspense fallback={null}>
+        <TourHero />
+      </Suspense>
 
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="container-content">
           <div className="grid gap-8 lg:grid-cols-[292px_1fr] lg:gap-10">
-            <TourSidebar />
-            <PackageGrid />
+            <Suspense fallback={null}>
+              <TourSidebar />
+            </Suspense>
+            <Suspense fallback={null}>
+              <PackageGrid />
+            </Suspense>
           </div>
         </div>
       </section>

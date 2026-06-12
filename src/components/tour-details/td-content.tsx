@@ -12,40 +12,23 @@ import {
   IconCircleXFilled,
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
+import type { Tour } from "@/data/tours";
 
 type IconType = ComponentType<{ className?: string; stroke?: number }>;
-
-const INFO: { icon: IconType; label: string; value: string }[] = [
-  { icon: IconClock, label: "Duration", value: "12 Days" },
-  { icon: IconRoute, label: "Tour Type", value: "Specific Tour" },
-  { icon: IconUsers, label: "Group Size", value: "10-15 People" },
-  { icon: IconLanguage, label: "Language", value: "English, Spanish" },
-];
-
-const OVERVIEW =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
-const HIGHLIGHTS =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
-
-const INCLUDED = ["Professional tour guide", "Hotel pickup and drop-off", "Welcome drinks and snacks", "All entrance fees"];
-const EXCLUDED = ["International flights", "Personal expenses", "Travel insurance"];
-
-const PLAN = [
-  {
-    day: "Day 01",
-    title: "Tour Start From California Beach",
-    body: "Vivamus pretium neque ut dapibus rutrum. Phasellus ut lacus et neque commodo scelerisque. Proin molestie enim mattis arcu vestibulum, vitae aliquet velit tristique. Nam pulvinar, felis et molestie tincidunt, sem massa malesuada mi.",
-  },
-  { day: "Day 02", title: "Exploring the Coastline & Sunset Cruise", body: "Maecenas ac dui magna. Aliquam sed congue dui. Vivamus pretium neque ut dapibus rutrum. Phasellus ut lacus et neque commodo scelerisque." },
-  { day: "Day 03", title: "Island Hopping & Departure", body: "Proin molestie enim mattis arcu vestibulum, vitae aliquet velit tristique. Nam pulvinar, felis et molestie tincidunt, sem massa malesuada mi, eget tincidunt augue lectus nec ipsum." },
-];
 
 function Heading({ children }: { children: React.ReactNode }) {
   return <h2 className="text-2xl font-semibold text-[#6e6e6e]">{children}</h2>;
 }
 
-export default function TdContent() {
+export default function TdContent({ tour }: { tour: Tour }) {
   const [open, setOpen] = useState(0);
+
+  const INFO: { icon: IconType; label: string; value: string }[] = [
+    { icon: IconClock, label: "Duration", value: tour.durationLabel },
+    { icon: IconRoute, label: "Tour Type", value: tour.tourType },
+    { icon: IconUsers, label: "Group Size", value: tour.groupSize },
+    { icon: IconLanguage, label: "Language", value: tour.language },
+  ];
 
   return (
     <motion.div
@@ -75,13 +58,13 @@ export default function TdContent() {
       {/* Overview */}
       <div className="mt-10">
         <Heading>Overview</Heading>
-        <p className="mt-4 text-base leading-[1.9] text-[#747474]">{OVERVIEW}</p>
+        <p className="mt-4 text-base leading-[1.9] text-[#747474]">{tour.overview}</p>
       </div>
 
       {/* Highlights */}
       <div className="mt-10">
         <Heading>Highlights</Heading>
-        <p className="mt-4 text-base leading-[1.9] text-[#747474]">{HIGHLIGHTS}</p>
+        <p className="mt-4 text-base leading-[1.9] text-[#747474]">{tour.highlights}</p>
       </div>
 
       {/* Included / Excluded */}
@@ -89,7 +72,7 @@ export default function TdContent() {
         <Heading>Included / Excluded</Heading>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <ul className="space-y-3">
-            {INCLUDED.map((x) => (
+            {tour.included.map((x) => (
               <li key={x} className="flex items-center gap-2.5 text-[#747474]">
                 <IconCircleCheckFilled className="size-5 shrink-0 text-[#3cbf56]" />
                 {x}
@@ -97,7 +80,7 @@ export default function TdContent() {
             ))}
           </ul>
           <ul className="space-y-3">
-            {EXCLUDED.map((x) => (
+            {tour.excluded.map((x) => (
               <li key={x} className="flex items-center gap-2.5 text-[#747474]">
                 <IconCircleXFilled className="size-5 shrink-0 text-[#f0673b]" />
                 {x}
@@ -111,7 +94,7 @@ export default function TdContent() {
       <div className="mt-10">
         <Heading>Tour Plan</Heading>
         <div className="mt-5 space-y-3">
-          {PLAN.map((p, i) => {
+          {tour.plan.map((p, i) => {
             const isOpen = i === open;
             return (
               <div key={p.day} className="overflow-hidden rounded-2xl border border-black/[0.08] bg-white">

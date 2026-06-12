@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { IconCalendarMonth, IconMinus, IconPlus } from "@tabler/icons-react";
+import type { Tour } from "@/data/tours";
 
 function Stepper({ value, set }: { value: number; set: (n: number) => void }) {
   return (
@@ -18,13 +20,17 @@ function Stepper({ value, set }: { value: number; set: (n: number) => void }) {
   );
 }
 
-export default function BookingForm() {
+export default function BookingForm({ tour }: { tour: Tour }) {
+  const adultPrice = tour.price;
+  const childPrice = Math.round(tour.price * 0.65);
+  const extraPrice = 25;
+
   const [adult, setAdult] = useState(2);
   const [child, setChild] = useState(1);
   const [time, setTime] = useState("5.00 PM");
   const [extra, setExtra] = useState(true);
 
-  const total = adult * 120 + child * 80 + (extra ? 25 : 0);
+  const total = adult * adultPrice + child * childPrice + (extra ? extraPrice : 0);
 
   return (
     <motion.div
@@ -69,11 +75,11 @@ export default function BookingForm() {
         <span className="text-base font-semibold text-[#6e6e6e]">Guest</span>
         <div className="mt-3 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#a1a1a1]">Adult (18+) $120</span>
+            <span className="text-sm text-[#a1a1a1]">Adult (18+) ${adultPrice}</span>
             <Stepper value={adult} set={setAdult} />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#a1a1a1]">Children (Under 12) $80</span>
+            <span className="text-sm text-[#a1a1a1]">Children (Under 12) ${childPrice}</span>
             <Stepper value={child} set={setChild} />
           </div>
         </div>
@@ -92,7 +98,7 @@ export default function BookingForm() {
             </span>
             <span className="text-sm text-[#a1a1a1]">Add service per Booking</span>
           </span>
-          <span className="text-sm text-[#747474]">$25</span>
+          <span className="text-sm text-[#747474]">${extraPrice}</span>
         </label>
       </div>
 
@@ -102,9 +108,12 @@ export default function BookingForm() {
         <span className="text-lg font-bold text-navy">${total}</span>
       </div>
 
-      <button type="button" className="mt-5 w-full rounded-full bg-primary px-6 py-3.5 text-base font-semibold text-black shadow-[0_14px_30px_-12px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark">
+      <Link
+        href={`/booking?tour=${tour.slug}&adult=${adult}&child=${child}&extra=${extra ? 1 : 0}&time=${encodeURIComponent(time)}`}
+        className="mt-5 block w-full rounded-full bg-primary px-6 py-3.5 text-center text-base font-semibold text-black shadow-[0_14px_30px_-12px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
+      >
         Book Now
-      </button>
+      </Link>
     </motion.div>
   );
 }

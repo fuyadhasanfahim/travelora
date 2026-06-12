@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import BlogHero from "@/components/blog/blog-hero";
 import BlogList from "@/components/blog/blog-list";
 import AboutCta from "@/components/about/about-cta";
@@ -12,7 +13,9 @@ export default function BlogPage() {
   return (
     <>
       <BlogHero title="News, Tips and Guides" crumbs={[{ label: "Home", href: "/" }, { label: "Blog" }]} />
-      <BlogList />
+      <Suspense fallback={null}>
+        <BlogList />
+      </Suspense>
       <AboutCta />
     </>
   );

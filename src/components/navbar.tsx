@@ -11,6 +11,7 @@ import {
   useScroll,
 } from "framer-motion";
 import { IconArrowRight } from "@tabler/icons-react";
+import NavbarSearch from "./navbar-search";
 
 // Primary navigation
 const NAV_LINKS = [
@@ -101,6 +102,7 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <NavbarSearch />
           <Link
             href="/tours"
             className="group hidden items-center gap-2 rounded-full bg-primary px-6 py-3 text-[15px] font-medium text-black shadow-[0_10px_24px_rgba(254,188,18,0.4)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-[0_14px_28px_rgba(254,188,18,0.55)] sm:inline-flex"

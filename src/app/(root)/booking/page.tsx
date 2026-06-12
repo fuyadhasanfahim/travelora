@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import PaymentHero from "@/components/payment/payment-hero";
 import PaymentForm from "@/components/payment/payment-form";
 import SocialUpdates from "@/components/home/social-updates";
@@ -12,7 +13,9 @@ export default function BookingPage() {
   return (
     <>
       <PaymentHero />
-      <PaymentForm />
+      <Suspense fallback={null}>
+        <PaymentForm />
+      </Suspense>
       <SocialUpdates />
     </>
   );
