@@ -26,7 +26,7 @@ const card: Variants = {
 
 export default function SocialUpdates() {
   return (
-    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
+    <section className="relative overflow-hidden pt-16 pb-36 sm:pt-20 sm:pb-40 lg:pt-24 lg:pb-48">
       {/* Decorative blobs */}
       <span className="pointer-events-none absolute -left-24 top-24 size-72 rounded-full bg-primary/10 blur-3xl" />
       <span className="pointer-events-none absolute -right-24 bottom-10 size-80 rounded-full bg-navy/10 blur-3xl" />

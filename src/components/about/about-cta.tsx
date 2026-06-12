@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function AboutCta() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
+    <section className="py-16 sm:py-20 lg:py-24 [&:last-child]:pb-36 sm:[&:last-child]:pb-40 lg:[&:last-child]:pb-48">
       <div className="container-content">
         <motion.div
           initial={{ opacity: 0, y: 28 }}

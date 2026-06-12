@@ -9,6 +9,7 @@ import {
   IconClock,
   IconHeart,
 } from "@tabler/icons-react";
+import Pagination from "@/components/ui/pagination";
 
 type Pkg = {
   image: string;
@@ -33,7 +34,6 @@ const PACKAGES: Pkg[] = [
   { image: "/images/packages/pkg-4.png", title: "Bali Tropical Beach & Temple Getaway", location: "Bali, Indonesia", rating: 4.6, reviews: 488, duration: "8 Days 7 Nights", price: 640, badge: { label: "Popular", tone: "popular" } },
 ];
 
-const PAGES = [1, 2, 3, 4, 5];
 
 const grid = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const card: Variants = {
@@ -133,27 +133,8 @@ export default function PackageGrid() {
       </motion.div>
 
       {/* Pagination */}
-      <div className="mt-10 flex items-center justify-center gap-2">
-        {PAGES.map((n) => (
-          <button
-            key={n}
-            type="button"
-            className={`grid size-10 place-items-center rounded-full text-sm font-medium transition-colors ${
-              n === 1
-                ? "bg-navy text-white shadow-[0_10px_22px_-10px_rgba(0,28,142,0.9)]"
-                : "border border-black/10 bg-white text-ink hover:border-navy/30 hover:text-navy"
-            }`}
-          >
-            {n}
-          </button>
-        ))}
-        <span className="px-1 text-ink/40">…</span>
-        <button
-          type="button"
-          className="grid size-10 place-items-center rounded-full border border-black/10 bg-white text-ink transition-colors hover:border-navy/30 hover:text-navy"
-        >
-          12
-        </button>
+      <div className="mt-10">
+        <Pagination total={10} current={1} />
       </div>
     </div>
   );

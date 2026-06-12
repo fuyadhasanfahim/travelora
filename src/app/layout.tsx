@@ -21,9 +21,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={`${poppins.variable} antialiased`}>
+        <html
+            lang="en"
+            className={`${poppins.variable} antialiased`}
+            scroll-behavior="smooth"
+        >
             <body className="flex min-h-screen flex-col">
-                {/* pt-20 clears the fixed navbar; full-bleed hero sections pull back with -mt-20 */}
                 <main className="flex-1 pt-20">{children}</main>
             </body>
         </html>

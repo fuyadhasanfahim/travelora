@@ -14,6 +14,7 @@ import {
   IconArrowRight,
   IconChevronRight,
 } from "@tabler/icons-react";
+import PromoExplore from "@/components/ui/promo-explore";
 
 const PARA1 =
   "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse id lobortis sem. Vivamus vitae finibus lorem. In ut lobortis nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc convallis cursus ultricies. Etiam consequat id est eu mattis. Mauris consectetur, dui ut bibendum cursus, est purus suscipit sem, at ullamcorper quam justo quis libero.";
@@ -42,7 +43,7 @@ const CATEGORIES = [
 
 export default function BlogDetail() {
   return (
-    <section className="pt-12 pb-28 sm:pt-16 sm:pb-32 lg:pt-20 lg:pb-40">
+    <section className="pt-12 pb-36 sm:pt-16 sm:pb-40 lg:pt-20 lg:pb-48">
       <div className="container-content">
         <div className="grid gap-10 lg:grid-cols-[1fr_397px] lg:gap-12">
           {/* ── Main article ── */}
@@ -176,18 +177,7 @@ export default function BlogDetail() {
             </div>
 
             {/* Promo */}
-            <div className="relative overflow-hidden rounded-3xl bg-navy p-7 text-white shadow-[0_24px_55px_-28px_rgba(0,28,142,0.7)]">
-              <span className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-primary/25 blur-3xl" />
-              <p className="relative text-sm font-medium uppercase tracking-wide text-amber-soft">Time to</p>
-              <p className="relative mt-1 text-4xl font-extrabold leading-[1.05]">
-                <span className="text-primary">Explore</span>
-                <br />
-                The World
-              </p>
-              <button type="button" className="relative mt-6 rounded-full bg-primary px-7 py-3 text-sm font-semibold text-black transition-colors hover:bg-primary-dark">
-                Book Now
-              </button>
-            </div>
+            <PromoExplore href="/tours" />
           </motion.aside>
         </div>
       </div>
