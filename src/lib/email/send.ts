@@ -36,6 +36,22 @@ async function deliver(opts: {
     html,
     text,
   });
+  if ((res as { error?: { name?: string; message?: string } }).error) {
+    const err = (res as { error: { name?: string; message?: string } }).error;
+    log.error("email", "Resend rejected the send", {
+      to: opts.to,
+      subject: opts.subject,
+      from: FROM,
+      errorName: err.name,
+      errorMessage: err.message,
+    });
+  } else {
+    log.info("email", "Resend accepted the send", {
+      to: opts.to,
+      subject: opts.subject,
+      id: (res as { data?: { id?: string } }).data?.id ?? null,
+    });
+  }
   return res;
 }
 

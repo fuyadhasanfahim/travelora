@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import {
   IconBrandFacebookFilled,
@@ -11,8 +12,22 @@ import {
 } from "@tabler/icons-react";
 import NewsletterForm from "./newsletter-form";
 
-const QUICK_MENU = ["About Us", "Privacy Policy", "Cookie Policy", "Terms & Conditions", "Why shop with us"];
-const LEGAL = ["Terms of Service", "Privacy Policy", "Cookies Policy", "Data Policy", "Refund Policy"];
+type FooterLink = { label: string; href: string };
+
+const QUICK_MENU: FooterLink[] = [
+  { label: "About Us", href: "/about" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Cookie Policy", href: "/cookies" },
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Why shop with us", href: "/why-shop-with-us" },
+];
+const LEGAL: FooterLink[] = [
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Cookies Policy", href: "/cookies" },
+  { label: "Data Policy", href: "/data-policy" },
+  { label: "Refund Policy", href: "/refund-policy" },
+];
 const SOCIALS = [
   { icon: IconBrandFacebookFilled, label: "Facebook" },
   { icon: IconBrandInstagram, label: "Instagram" },
@@ -150,20 +165,20 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FooterCol({ title, links }: { title: string; links: string[] }) {
+function FooterCol({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div>
       <FooterHeading>{title}</FooterHeading>
       <ul className="mt-5 space-y-3">
         {links.map((l) => (
-          <li key={l}>
-            <a
-              href="#"
+          <li key={`${title}-${l.label}`}>
+            <Link
+              href={l.href}
               className="group inline-flex items-center gap-2 text-[15px] text-[#c2cdf8] transition-colors hover:text-white"
             >
               <span className="h-px w-0 bg-amber-soft transition-all duration-300 group-hover:w-4" />
-              {l}
-            </a>
+              {l.label}
+            </Link>
           </li>
         ))}
       </ul>

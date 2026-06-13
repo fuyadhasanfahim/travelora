@@ -311,12 +311,12 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
         </div>
 
         {/* Footer */}
-        <div className="mt-5 flex items-center justify-between border-t border-black/[0.06] pt-5">
-          <div>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-black/[0.06] pt-5">
+          <div className="min-w-0">
             <span className="block text-[11px] font-medium uppercase tracking-wide text-[#b0b0b0]">
               From
             </span>
-            <p className="flex items-baseline gap-1.5">
+            <p className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
               {pkg.oldPrice && (
                 <span className="text-sm font-normal text-[#bdbdbd] line-through">
                   ${pkg.oldPrice}
@@ -328,7 +328,7 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
           </div>
           <button
             type="button"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black shadow-[0_8px_18px_-8px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
+            className="shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black shadow-[0_8px_18px_-8px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
           >
             Book Now
           </button>

@@ -243,17 +243,17 @@ export default function PaymentForm() {
                 )}
               </div>
 
-              <label className="sm:col-span-2 mt-2 flex items-start gap-2.5 text-[15px] text-[#373737]">
+              <label className="group sm:col-span-2 mt-2 flex items-start gap-2.5 text-[15px] text-[#373737]">
                 <input type="checkbox" {...register("acceptTerms")} className="peer sr-only" />
                 <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded border border-black/25 transition-colors peer-checked:border-navy peer-checked:bg-navy peer-checked:text-white">
-                  <svg viewBox="0 0 24 24" fill="none" className="size-3.5 opacity-0 peer-checked:opacity-100" aria-hidden>
+                  <svg viewBox="0 0 24 24" fill="none" className="size-3.5 text-white opacity-0 transition-opacity group-has-[:checked]:opacity-100" aria-hidden>
                     <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
                 <span>
                   I have read and accept the{" "}
-                  <a href="#" className="text-primary-dark hover:underline">Terms and Conditions</a> and{" "}
-                  <a href="#" className="text-primary-dark hover:underline">Privacy Policy</a>
+                  <Link href="/terms" className="text-primary-dark hover:underline">Terms and Conditions</Link> and{" "}
+                  <Link href="/privacy" className="text-primary-dark hover:underline">Privacy Policy</Link>
                 </span>
               </label>
               {errors.acceptTerms && (

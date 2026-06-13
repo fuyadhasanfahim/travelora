@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { IconArrowUpRight, IconMapPin } from "@tabler/icons-react";
@@ -45,7 +46,7 @@ export default function PopularDestination() {
             Popular destination
           </h2>
           <p className="mt-3 text-base text-[#8e8e8e] sm:text-lg">
-            Navigate the globe with confidence — hover a place to take a closer look.
+            Navigate the globe with confidence — swipe or hover a place to take a closer look.
           </p>
         </motion.div>
 
@@ -130,37 +131,58 @@ export default function PopularDestination() {
           })}
         </motion.div>
 
-        {/* Mobile / tablet: capsule slider */}
+        {/* Mobile / tablet: fixed-width snap carousel — premium card treatment */}
         <motion.div
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
           transition={{ staggerChildren: 0.07 }}
-          className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 sm:gap-6 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="-mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-6 sm:gap-5 sm:px-6 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollPaddingLeft: "1rem" }}
         >
           {DESTINATIONS.map((d) => (
             <motion.div
               key={d.name}
               variants={pill}
-              whileHover={{ scale: 1.05, y: -8 }}
+              whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="group w-[150px] shrink-0 origin-bottom cursor-pointer snap-start sm:w-[180px]"
+              className="group relative aspect-[4/5] w-[260px] shrink-0 snap-start overflow-hidden rounded-[24px] shadow-[0_18px_45px_-22px_rgba(0,0,0,0.5)] ring-1 ring-black/5 sm:w-[300px]"
             >
-              <div className="relative aspect-[187/254] w-full overflow-hidden rounded-full ring-1 ring-black/5">
-                <Image
-                  src={d.image}
-                  alt={d.name}
-                  fill
-                  sizes="180px"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              </div>
-              <div className="mt-4 text-center">
-                <p className="text-base font-medium text-[#747474] transition-colors group-hover:text-navy sm:text-lg">
-                  {d.name}
-                </p>
-                <p className="mt-1 text-sm text-[#b9b9b9] sm:text-base">{d.tours} Tours</p>
+              <Link
+                href={`/tours?destination=${encodeURIComponent(d.country.split(",")[0].trim().toLowerCase())}`}
+                aria-label={`Explore ${d.tours} tours in ${d.name}`}
+                className="absolute inset-0 z-10"
+              />
+              <Image
+                src={d.image}
+                alt={d.name}
+                fill
+                sizes="(max-width: 640px) 260px, (max-width: 1024px) 300px, 0px"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              {/* Gradient overlay — softer, lifts the text without burying the image */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+              {/* Tours chip */}
+              <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-navy shadow-sm backdrop-blur">
+                <IconMapPin className="size-3" stroke={2} />
+                {d.tours} Tours
+              </span>
+
+              {/* Bottom content */}
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 sm:p-5">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1 text-[11px] font-medium text-white/85">
+                    <IconMapPin className="size-3" stroke={1.8} />
+                    <span className="truncate">{d.country}</span>
+                  </p>
+                  <p className="mt-0.5 truncate text-lg font-semibold leading-tight text-white sm:text-xl">
+                    {d.name}
+                  </p>
+                </div>
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-black shadow-lg transition-transform duration-300 group-hover:rotate-45">
+                  <IconArrowUpRight className="size-4" stroke={2.2} />
+                </span>
               </div>
             </motion.div>
           ))}

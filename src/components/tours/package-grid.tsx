@@ -9,10 +9,13 @@ import {
   IconMapPin,
   IconClock,
   IconHeart,
+  IconAdjustmentsHorizontal,
 } from "@tabler/icons-react";
 import Pagination from "@/components/ui/pagination";
 import { TourGridSkeleton } from "@/components/ui/skeleton";
 import { useTours, type ToursListFilters } from "@/lib/query/hooks";
+import { useUIStore } from "@/stores/ui-store";
+import { useActiveFilterCount } from "./tour-filters-panel";
 
 const PAGE_SIZE = 6;
 
@@ -25,6 +28,8 @@ const card: Variants = {
 export default function PackageGrid() {
   const router = useRouter();
   const sp = useSearchParams();
+  const openFilters = useUIStore((s) => s.setFilterDrawer);
+  const activeFilterCount = useActiveFilterCount();
 
   const filters: ToursListFilters = {
     q: sp.get("q")?.trim() || undefined,
@@ -62,8 +67,12 @@ export default function PackageGrid() {
   if (isLoading) {
     return (
       <div>
-        <div className="mb-6 flex justify-end">
-          <div className="h-9 w-36 animate-pulse rounded-full bg-black/[0.06]" />
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="h-4 w-32 animate-pulse rounded bg-black/[0.06]" />
+          <div className="flex items-center gap-2">
+            <div className="h-9 w-28 animate-pulse rounded-full bg-black/[0.06] lg:hidden" />
+            <div className="h-9 w-36 animate-pulse rounded-full bg-black/[0.06]" />
+          </div>
         </div>
         <TourGridSkeleton count={PAGE_SIZE} />
       </div>
@@ -100,21 +109,43 @@ export default function PackageGrid() {
           Showing <span className="font-semibold text-ink">{items.length}</span> of{" "}
           <span className="font-semibold text-ink">{total}</span> tours
         </p>
-        <label className="flex items-center gap-2 text-sm text-[#6e6e6e]">
-          Sort:
-          <select
-            value={sort}
-            onChange={(e) =>
-              setParam("sort", e.target.value === "popular" ? null : e.target.value)
+        <div className="flex items-center gap-2">
+          {/* Mobile / tablet only — opens drawer */}
+          <button
+            type="button"
+            onClick={() => openFilters(true)}
+            aria-label={
+              activeFilterCount > 0
+                ? `Open filters (${activeFilterCount} active)`
+                : "Open filters"
             }
-            className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-ink outline-none transition-colors hover:border-navy/30 focus:border-navy/40"
+            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy/30 lg:hidden"
           >
-            <option value="popular">Popular</option>
-            <option value="price-low">Price: Low → High</option>
-            <option value="price-high">Price: High → Low</option>
-            <option value="rating">Top rated</option>
-          </select>
-        </label>
+            <IconAdjustmentsHorizontal className="size-4" stroke={1.9} />
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="grid min-w-[1.25rem] place-items-center rounded-full bg-navy px-1.5 text-[11px] font-semibold text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          <label className="flex items-center gap-2 text-sm text-[#6e6e6e]">
+            <span className="hidden sm:inline">Sort:</span>
+            <select
+              value={sort}
+              onChange={(e) =>
+                setParam("sort", e.target.value === "popular" ? null : e.target.value)
+              }
+              className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-ink outline-none transition-colors hover:border-navy/30 focus:border-navy/40"
+            >
+              <option value="popular">Popular</option>
+              <option value="price-low">Price: Low → High</option>
+              <option value="price-high">Price: High → Low</option>
+              <option value="rating">Top rated</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {items.length === 0 ? (
@@ -199,9 +230,13 @@ export default function PackageGrid() {
                     ${p.price}
                     <span className="text-sm font-normal text-[#a1a1a1]">/ Person</span>
                   </p>
-                  <span className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black transition-all group-hover:-translate-y-0.5 group-hover:bg-primary-dark">
+                  <Link
+                    href={`/booking?tour=${p.slug}&adult=2&child=1&extra=0`}
+                    aria-label={`Book ${p.title}`}
+                    className="relative z-20 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black transition-all group-hover:-translate-y-0.5 group-hover:bg-primary-dark"
+                  >
                     Book Now
-                  </span>
+                  </Link>
                 </div>
               </div>
             </motion.article>
