@@ -11,7 +11,7 @@ import {
   IconMapPin,
   IconClock,
 } from "@tabler/icons-react";
-import { TOURS } from "@/data/tours";
+import { useTours } from "@/lib/query/hooks";
 
 export default function NavbarSearch() {
   const [open, setOpen] = useState(false);
@@ -34,15 +34,19 @@ export default function NavbarSearch() {
     }
   }, [open]);
 
+  const { data: toursData } = useTours({ pageSize: 24 }, { enabled: open });
   const results = useMemo(() => {
+    const allTours = toursData?.items ?? [];
     const term = q.trim().toLowerCase();
-    if (!term) return TOURS.slice(0, 6);
-    return TOURS.filter((t) =>
-      [t.title, t.location, t.country, t.category, t.tourType].some((v) =>
-        v.toLowerCase().includes(term),
-      ),
-    ).slice(0, 8);
-  }, [q]);
+    if (!term) return allTours.slice(0, 6);
+    return allTours
+      .filter((t) =>
+        [t.title, t.location, t.country, t.category, t.tourType].some((v) =>
+          v.toLowerCase().includes(term),
+        ),
+      )
+      .slice(0, 8);
+  }, [q, toursData]);
 
   return (
     <>

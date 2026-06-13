@@ -1,0 +1,252 @@
+// Travelora — Prisma schema
+// Provider: PostgreSQL (Neon serverless)
+// Generator: prisma-client-js
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────
+
+enum TourCategory {
+  Adventure
+  Beach
+  City
+  Desert
+  Tropical
+  Mountain
+  Cruise
+  Cultural
+  Wildlife
+  Honeymoon
+}
+
+enum BadgeTone {
+  popular
+  discount
+  none
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+}
+
+enum PaymentMethod {
+  bank
+  paypal
+  stripe
+  cash
+}
+
+enum ContactStatus {
+  new
+  read
+  archived
+}
+
+enum SubscriberStatus {
+  active
+  unsubscribed
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Tours
+// ─────────────────────────────────────────────────────────────────────────
+
+model Tour {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  title         String
+  location      String       // "City, Country"
+  country       String
+  category      TourCategory
+  rating        Float        @default(4.7)
+  reviews       Int          @default(0)
+  durationDays  Int
+  durationLabel String
+  price         Int
+  oldPrice      Int?
+  groupSize     String
+  language      String
+  tourType      String
+  badgeLabel    String
+  badgeTone     BadgeTone    @default(none)
+  image         String       // featured image (relative path)
+  gallery       String[]     // additional images
+  overview      String       @db.Text
+  highlights    String       @db.Text
+  included      String[]
+  excluded      String[]
+  plan          Json         // [{ day, title, body }]
+  featured      Boolean      @default(false)
+  bookings      Booking[]
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([category])
+  @@index([country])
+  @@index([featured])
+  @@index([price])
+  @@index([rating])
+  @@map("tours")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Blogs
+// ─────────────────────────────────────────────────────────────────────────
+
+model Blog {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  cover           String
+  excerpt         String   @db.Text
+  body            Json     // [{ heading?, text }]
+  category        String
+  tags            String[]
+  author          String
+  authorAvatar    String?
+  readMinutes     Int      @default(5)
+  date            String   // human-readable display date
+  publishedAt     DateTime @default(now())
+  quote           String?  @db.Text
+  relatedTourSlug String?
+  featured        Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+  @@index([publishedAt])
+  @@map("blogs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Bookings
+// ─────────────────────────────────────────────────────────────────────────
+
+model Booking {
+  id              String        @id @default(cuid())
+  reference       String        @unique // BK-XXXX
+  tourId          String
+  tour            Tour          @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  // Customer
+  firstName       String
+  lastName        String
+  email           String
+  phone           String
+  address         String?
+  city            String?
+  zip             String?
+  province        String?
+  country         String
+
+  // Trip
+  startDate       DateTime
+  endDate         DateTime?
+  adults          Int           @default(1)
+  children        Int           @default(0)
+  extras          Boolean       @default(false)
+  requirements    String?       @db.Text
+
+  // Pricing snapshot
+  unitPrice       Int           // adult price at time of booking
+  childPrice      Int
+  extraPrice      Int           @default(0)
+  couponCode      String?
+  couponDiscount  Int           @default(0)
+  total           Int
+
+  status          BookingStatus @default(pending)
+  payments        Payment[]
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([tourId])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Payments
+// ─────────────────────────────────────────────────────────────────────────
+
+model Payment {
+  id            String        @id @default(cuid())
+  reference     String        @unique // PM-XXXX
+  bookingId     String
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  amount        Int
+  currency      String        @default("USD")
+  method        PaymentMethod
+  status        PaymentStatus @default(pending)
+
+  providerId    String?       // future Stripe payment_intent id
+  providerData  Json?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([bookingId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Contacts
+// ─────────────────────────────────────────────────────────────────────────
+
+model Contact {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String        @db.Text
+  status    ContactStatus @default(new)
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("contacts")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Newsletter
+// ─────────────────────────────────────────────────────────────────────────
+
+model NewsletterSubscriber {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  status         SubscriberStatus @default(active)
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+  source         String?          // "footer", "blog", etc.
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@map("newsletter_subscribers")
+}

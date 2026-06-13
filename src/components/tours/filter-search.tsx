@@ -12,9 +12,7 @@ import {
   IconMinus,
   IconPlus,
 } from "@tabler/icons-react";
-import { TOURS } from "@/data/tours";
-
-const COUNTRIES = Array.from(new Set(TOURS.map((t) => t.country))).sort();
+import { useTours } from "@/lib/query/hooks";
 
 function toDDMMYYYY(iso: string) {
   if (!iso) return "";
@@ -100,6 +98,8 @@ function Field({ label, value, icon, borderLeft, children }: FieldProps) {
 export default function FilterSearch() {
   const router = useRouter();
   const sp = useSearchParams();
+  const { data } = useTours({ pageSize: 48 });
+  const COUNTRIES = Array.from(new Set((data?.items ?? []).map((t) => t.country))).sort();
 
   const [location, setLocation] = useState<string>(
     (sp.get("destination") ?? "").split(",")[0] ?? "",

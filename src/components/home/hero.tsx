@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { IconSend, IconPlayerPlayFilled } from "@tabler/icons-react";
-import TourSearch from "./tour-search";
 
 const SLIDES = [
   "/images/hero/slide-1.png",
@@ -122,10 +121,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Search bar overlapping the hero bottom */}
-      <div className="container-content relative z-20 -mt-24 sm:-mt-20 lg:-mt-16">
-        <TourSearch />
-      </div>
     </section>
   );
 }

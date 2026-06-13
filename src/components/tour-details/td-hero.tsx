@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { IconChevronRight, IconStarFilled, IconStarHalfFilled, IconMapPin } from "@tabler/icons-react";
-import type { Tour } from "@/data/tours";
+import type { Tour } from "@prisma/client";
 
 function Stars({ value }: { value: number }) {
   const full = Math.floor(value);

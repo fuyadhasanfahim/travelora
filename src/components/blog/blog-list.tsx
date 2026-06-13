@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, Variants } from "framer-motion";
 import { IconUserCircle, IconCalendarMonth, IconClock, IconSearch } from "@tabler/icons-react";
 import Pagination from "@/components/ui/pagination";
-import { filterBlogs, BLOG_CATEGORIES } from "@/data/blogs";
+import { BlogListSkeleton } from "@/components/ui/skeleton";
+import { useBlogs } from "@/lib/query/hooks";
 
 const grid = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const card: Variants = {
@@ -23,10 +23,12 @@ export default function BlogList() {
   const category = sp.get("category") ?? "";
   const page = Math.max(1, Number(sp.get("page") || 1));
 
-  const result = useMemo(
-    () => filterBlogs({ q, category, page }),
-    [q, category, page],
-  );
+  const { data, isLoading, isError, refetch } = useBlogs({
+    q: q || undefined,
+    category: category || undefined,
+    page,
+    pageSize: 6,
+  });
 
   const setParam = (key: string, value: string | null) => {
     const params = new URLSearchParams(sp.toString());
@@ -47,7 +49,6 @@ export default function BlogList() {
   return (
     <section className="py-12 sm:py-16 lg:py-20">
       <div className="container-content">
-        {/* Toolbar: search + category chips */}
         <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 lg:max-w-md lg:flex-1">
             <IconSearch className="size-5 shrink-0 text-[#a1a1a1]" stroke={1.8} />
@@ -69,7 +70,7 @@ export default function BlogList() {
             >
               All
             </button>
-            {BLOG_CATEGORIES.map((c) => (
+            {(data?.categories ?? []).map((c) => (
               <button
                 key={c.label}
                 type="button"
@@ -86,7 +87,20 @@ export default function BlogList() {
           </div>
         </div>
 
-        {result.items.length === 0 ? (
+        {isLoading ? (
+          <BlogListSkeleton count={6} />
+        ) : isError || !data ? (
+          <div className="grid place-items-center rounded-3xl border border-dashed border-rose-200 bg-rose-50/30 py-20 text-center">
+            <p className="text-lg font-semibold text-rose-700">Could not load articles.</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-5 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-primary-dark"
+            >
+              Retry
+            </button>
+          </div>
+        ) : data.items.length === 0 ? (
           <div className="grid place-items-center rounded-3xl border border-dashed border-black/15 bg-white py-20 text-center">
             <p className="text-lg font-semibold text-[#6e6e6e]">No articles match these filters.</p>
             <button
@@ -105,7 +119,7 @@ export default function BlogList() {
             animate="show"
             className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:gap-8"
           >
-            {result.items.map((p) => (
+            {data.items.map((p) => (
               <motion.article
                 key={p.slug}
                 variants={card}
@@ -155,9 +169,9 @@ export default function BlogList() {
           </motion.div>
         )}
 
-        {result.totalPages > 1 && (
+        {data && data.totalPages > 1 && (
           <div className="mt-12">
-            <Pagination total={result.totalPages} current={result.page} onChange={goPage} />
+            <Pagination total={data.totalPages} current={data.page} onChange={goPage} />
           </div>
         )}
       </div>

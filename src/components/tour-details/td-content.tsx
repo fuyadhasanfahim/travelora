@@ -12,7 +12,9 @@ import {
   IconCircleXFilled,
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
-import type { Tour } from "@/data/tours";
+import type { Tour } from "@prisma/client";
+
+type PlanItem = { day: string; title: string; body: string };
 
 type IconType = ComponentType<{ className?: string; stroke?: number }>;
 
@@ -22,6 +24,7 @@ function Heading({ children }: { children: React.ReactNode }) {
 
 export default function TdContent({ tour }: { tour: Tour }) {
   const [open, setOpen] = useState(0);
+  const plan = (tour.plan ?? []) as unknown as PlanItem[];
 
   const INFO: { icon: IconType; label: string; value: string }[] = [
     { icon: IconClock, label: "Duration", value: tour.durationLabel },
@@ -94,7 +97,7 @@ export default function TdContent({ tour }: { tour: Tour }) {
       <div className="mt-10">
         <Heading>Tour Plan</Heading>
         <div className="mt-5 space-y-3">
-          {tour.plan.map((p, i) => {
+          {plan.map((p, i) => {
             const isOpen = i === open;
             return (
               <div key={p.day} className="overflow-hidden rounded-2xl border border-black/[0.08] bg-white">

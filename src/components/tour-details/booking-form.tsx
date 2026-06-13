@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { IconCalendarMonth, IconMinus, IconPlus } from "@tabler/icons-react";
-import type { Tour } from "@/data/tours";
+import type { Tour } from "@prisma/client";
 
 function Stepper({ value, set }: { value: number; set: (n: number) => void }) {
   return (
@@ -25,10 +25,16 @@ export default function BookingForm({ tour }: { tour: Tour }) {
   const childPrice = Math.round(tour.price * 0.65);
   const extraPrice = 25;
 
+  const today = new Date();
+  const defaultStart = new Date(today.getTime() + 14 * 86400_000)
+    .toISOString()
+    .slice(0, 10);
+
   const [adult, setAdult] = useState(2);
   const [child, setChild] = useState(1);
   const [time, setTime] = useState("5.00 PM");
   const [extra, setExtra] = useState(true);
+  const [startDate, setStartDate] = useState(defaultStart);
 
   const total = adult * adultPrice + child * childPrice + (extra ? extraPrice : 0);
 
@@ -44,10 +50,17 @@ export default function BookingForm({ tour }: { tour: Tour }) {
 
       {/* From */}
       <div className="mt-5">
-        <span className="text-base font-semibold text-[#6e6e6e]">From:</span>
-        <div className="mt-2 flex items-center gap-2 rounded-xl border border-black/10 px-4 py-3">
+        <label htmlFor="bf-start" className="text-base font-semibold text-[#6e6e6e]">From:</label>
+        <div className="mt-2 flex items-center gap-2 rounded-xl border border-black/10 px-4 py-2.5 focus-within:border-navy/40">
           <IconCalendarMonth className="size-5 text-navy/60" stroke={1.8} />
-          <span className="text-sm text-[#a1a1a1]">25.09.26</span>
+          <input
+            id="bf-start"
+            type="date"
+            value={startDate}
+            min={new Date().toISOString().slice(0, 10)}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full bg-transparent text-sm text-[#373737] outline-none"
+          />
         </div>
       </div>
 
@@ -109,7 +122,7 @@ export default function BookingForm({ tour }: { tour: Tour }) {
       </div>
 
       <Link
-        href={`/booking?tour=${tour.slug}&adult=${adult}&child=${child}&extra=${extra ? 1 : 0}&time=${encodeURIComponent(time)}`}
+        href={`/booking?tour=${tour.slug}&adult=${adult}&child=${child}&extra=${extra ? 1 : 0}&time=${encodeURIComponent(time)}&start=${startDate}`}
         className="mt-5 block w-full rounded-full bg-primary px-6 py-3.5 text-center text-base font-semibold text-black shadow-[0_14px_30px_-12px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
       >
         Book Now

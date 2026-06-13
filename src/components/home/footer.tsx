@@ -9,6 +9,7 @@ import {
   IconPhone,
   IconArrowUp,
 } from "@tabler/icons-react";
+import NewsletterForm from "./newsletter-form";
 
 const QUICK_MENU = ["About Us", "Privacy Policy", "Cookie Policy", "Terms & Conditions", "Why shop with us"];
 const LEGAL = ["Terms of Service", "Privacy Policy", "Cookies Policy", "Data Policy", "Refund Policy"];
@@ -59,24 +60,7 @@ export default function Footer() {
             <h3 className="text-center text-xl font-medium text-white sm:text-2xl lg:text-left">
               Get updated, subscribe newsletter
             </h3>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex w-full max-w-md items-center gap-2 rounded-full bg-white p-1.5 shadow-sm"
-            >
-              <input
-                type="email"
-                required
-                placeholder="Your mail address"
-                aria-label="Your mail address"
-                className="min-w-0 flex-1 bg-transparent px-4 text-sm text-ink placeholder:text-[#c5c5c5] outline-none"
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-full bg-navy px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-navy/90"
-              >
-                Subscribe
-              </button>
-            </form>
+            <NewsletterForm source="footer" />
           </div>
         </motion.div>
 

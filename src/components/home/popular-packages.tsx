@@ -13,7 +13,10 @@ import {
   IconCurrencyDollar,
   IconArrowRight,
 } from "@tabler/icons-react";
+import Link from "next/link";
 import Select from "@/components/ui/select";
+import { useTours } from "@/lib/query/hooks";
+import { TourCardSkeleton } from "@/components/ui/skeleton";
 
 type Pkg = {
   image: string;
@@ -29,82 +32,7 @@ type Pkg = {
   badge: { label: string; tone: "popular" | "discount" };
 };
 
-const PACKAGES: Pkg[] = [
-  {
-    image: "/images/packages/pkg-1.png",
-    title: "California Sunset / Twilight Boat Cruise",
-    location: "Jamaica, Kenya",
-    category: "Cruise",
-    rating: 4.8,
-    reviews: 496,
-    duration: "7 Days 6 Nights",
-    group: "Up to 12",
-    price: 565,
-    badge: { label: "Popular", tone: "popular" },
-  },
-  {
-    image: "/images/packages/pkg-2.png",
-    title: "Santorini Island Hopping Adventure",
-    location: "Santorini, Greece",
-    category: "Beach",
-    rating: 4.9,
-    reviews: 312,
-    duration: "5 Days 4 Nights",
-    group: "Up to 8",
-    price: 540,
-    oldPrice: 720,
-    badge: { label: "25% OFF", tone: "discount" },
-  },
-  {
-    image: "/images/packages/pkg-3.png",
-    title: "Swiss Alps Scenic Mountain Retreat",
-    location: "Zermatt, Switzerland",
-    category: "Mountain",
-    rating: 4.7,
-    reviews: 210,
-    duration: "6 Days 5 Nights",
-    group: "Up to 10",
-    price: 890,
-    badge: { label: "Popular", tone: "popular" },
-  },
-  {
-    image: "/images/packages/pkg-4.png",
-    title: "Bali Tropical Beach & Temple Getaway",
-    location: "Bali, Indonesia",
-    category: "Cultural",
-    rating: 4.6,
-    reviews: 488,
-    duration: "8 Days 7 Nights",
-    group: "Up to 14",
-    price: 640,
-    badge: { label: "Popular", tone: "popular" },
-  },
-  {
-    image: "/images/packages/pkg-5.png",
-    title: "Norway Fjords & Northern Lights Tour",
-    location: "Tromsø, Norway",
-    category: "Adventure",
-    rating: 4.9,
-    reviews: 175,
-    duration: "4 Days 3 Nights",
-    group: "Up to 9",
-    price: 833,
-    oldPrice: 980,
-    badge: { label: "15% OFF", tone: "discount" },
-  },
-  {
-    image: "/images/packages/pkg-6.png",
-    title: "Machu Picchu Inca Trail Expedition",
-    location: "Cusco, Peru",
-    category: "Adventure",
-    rating: 4.8,
-    reviews: 264,
-    duration: "5 Days 4 Nights",
-    group: "Up to 11",
-    price: 710,
-    badge: { label: "Popular", tone: "popular" },
-  },
-];
+// Tours are now fetched from the API.
 
 const CATEGORY_OPTIONS = [
   { label: "All Categories", value: "all" },
@@ -152,15 +80,30 @@ export default function PopularPackages() {
     price: "all",
   });
 
-  const visible = useMemo(() => {
-    return PACKAGES.filter((p) => {
-      if (filters.category !== "all" && p.category.toLowerCase() !== filters.category)
-        return false;
-      if (
-        filters.destination !== "all" &&
-        !p.location.toLowerCase().includes(filters.destination)
-      )
-        return false;
+  const { data, isLoading } = useTours({ pageSize: 24 });
+
+  const visible = useMemo<Pkg[]>(() => {
+    const items = (data?.items ?? []).map((t): Pkg & { slug: string } => ({
+      slug: t.slug,
+      image: t.image,
+      title: t.title,
+      location: t.location,
+      category: t.category,
+      rating: t.rating,
+      reviews: t.reviews,
+      duration: t.durationLabel,
+      group: t.groupSize,
+      price: t.price,
+      oldPrice: t.oldPrice ?? undefined,
+      badge: {
+        label: t.badgeLabel,
+        tone: t.badgeTone === "discount" ? "discount" : "popular",
+      },
+    }));
+
+    return items.filter((p) => {
+      if (filters.category !== "all" && p.category.toLowerCase() !== filters.category) return false;
+      if (filters.destination !== "all" && !p.location.toLowerCase().includes(filters.destination)) return false;
       if (filters.duration !== "all") {
         const days = parseInt(p.duration, 10);
         if (filters.duration === "short" && days > 3) return false;
@@ -169,13 +112,12 @@ export default function PopularPackages() {
       }
       if (filters.price !== "all") {
         if (filters.price === "u600" && p.price >= 600) return false;
-        if (filters.price === "600-800" && (p.price < 600 || p.price > 800))
-          return false;
+        if (filters.price === "600-800" && (p.price < 600 || p.price > 800)) return false;
         if (filters.price === "800+" && p.price < 800) return false;
       }
       return true;
-    });
-  }, [filters]);
+    }).slice(0, 6);
+  }, [data, filters]);
 
   return (
     <section className="bg-[#fafafa] py-16 sm:py-20 lg:py-24">
@@ -240,14 +182,22 @@ export default function PopularPackages() {
         </motion.div>
 
         {/* Cards grid */}
-        <motion.div
-          layout
-          className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-8"
-        >
-          {visible.map((p) => (
-            <PackageCard key={p.title} pkg={p} />
-          ))}
-        </motion.div>
+        {isLoading ? (
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <TourCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            layout
+            className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-8"
+          >
+            {visible.map((p) => (
+              <PackageCard key={p.title} pkg={p} />
+            ))}
+          </motion.div>
+        )}
 
         {visible.length === 0 && (
           <p className="mt-12 text-center text-base text-[#9a9a9a]">
@@ -264,8 +214,8 @@ export default function PopularPackages() {
             transition={{ duration: 0.5 }}
             className="mt-12 flex justify-center"
           >
-            <button
-              type="button"
+            <Link
+              href="/tours"
               className="group inline-flex items-center gap-2 rounded-full bg-navy px-9 py-3.5 text-base font-medium text-white shadow-[0_12px_28px_rgba(0,28,142,0.25)] transition-all hover:-translate-y-0.5 hover:bg-navy/90"
             >
               Explore All Packages
@@ -273,7 +223,7 @@ export default function PopularPackages() {
                 className="size-5 transition-transform group-hover:translate-x-1"
                 stroke={2}
               />
-            </button>
+            </Link>
           </motion.div>
         )}
       </div>

@@ -10,7 +10,8 @@ import {
   IconStarFilled,
   IconStarHalfFilled,
 } from "@tabler/icons-react";
-import { TOURS, TOUR_CATEGORIES, POPULAR_DESTINATIONS } from "@/data/tours";
+import { TOUR_CATEGORIES, POPULAR_DESTINATIONS } from "@/lib/catalog";
+import { useTours } from "@/lib/query/hooks";
 
 const RATINGS = [4.9, 4.5, 4.2, 4, 3.7, 3.5];
 
@@ -107,9 +108,12 @@ export default function TourSidebar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price]);
 
+  // Fetch a wide page to compute counts per category for the sidebar.
+  // Cheap (cached) — used for badges only.
+  const { data: allTours } = useTours({ pageSize: 48 });
   const categoryCounts = TOUR_CATEGORIES.map((c) => ({
     label: c,
-    count: TOURS.filter((t) => t.category === c).length,
+    count: allTours?.items.filter((t) => t.category === c).length ?? 0,
   }));
 
   return (

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, Variants } from "framer-motion";
 import {
@@ -12,7 +11,8 @@ import {
   IconHeart,
 } from "@tabler/icons-react";
 import Pagination from "@/components/ui/pagination";
-import { TOURS } from "@/data/tours";
+import { TourGridSkeleton } from "@/components/ui/skeleton";
+import { useTours, type ToursListFilters } from "@/lib/query/hooks";
 
 const PAGE_SIZE = 6;
 
@@ -26,57 +26,18 @@ export default function PackageGrid() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  const q = sp.get("q")?.trim().toLowerCase() ?? "";
-  const cats = (sp.get("category") ?? "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const dests = (sp.get("destination") ?? "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const minRating = sp.get("minRating") ? Number(sp.get("minRating")) : undefined;
-  const maxPrice = sp.get("maxPrice") ? Number(sp.get("maxPrice")) : undefined;
-  const sort = sp.get("sort") ?? "popular";
-  const page = Math.max(1, Number(sp.get("page") || 1));
+  const filters: ToursListFilters = {
+    q: sp.get("q")?.trim() || undefined,
+    category: sp.get("category") || undefined,
+    destination: sp.get("destination") || undefined,
+    minRating: sp.get("minRating") ? Number(sp.get("minRating")) : undefined,
+    maxPrice: sp.get("maxPrice") ? Number(sp.get("maxPrice")) : undefined,
+    sort: sp.get("sort") || "popular",
+    page: Math.max(1, Number(sp.get("page") || 1)),
+    pageSize: PAGE_SIZE,
+  };
 
-  const { items, total, totalPages } = useMemo(() => {
-    let list = TOURS.slice();
-
-    if (q) {
-      list = list.filter((t) =>
-        [t.title, t.location, t.country, t.category, t.tourType].some((v) =>
-          v.toLowerCase().includes(q),
-        ),
-      );
-    }
-    if (cats.length) {
-      list = list.filter((t) => cats.includes(t.category.toLowerCase()));
-    }
-    if (dests.length) {
-      list = list.filter((t) =>
-        dests.some(
-          (d) =>
-            t.location.toLowerCase().includes(d) ||
-            t.country.toLowerCase().includes(d),
-        ),
-      );
-    }
-    if (minRating !== undefined) list = list.filter((t) => t.rating >= minRating);
-    if (maxPrice !== undefined) list = list.filter((t) => t.price <= maxPrice);
-
-    if (sort === "price-low") list.sort((a, b) => a.price - b.price);
-    else if (sort === "price-high") list.sort((a, b) => b.price - a.price);
-    else if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
-    // popular = original order
-
-    const total = list.length;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    const safePage = Math.min(page, totalPages);
-    const start = (safePage - 1) * PAGE_SIZE;
-    const items = list.slice(start, start + PAGE_SIZE);
-    return { items, total, totalPages };
-  }, [q, cats, dests, minRating, maxPrice, sort, page]);
+  const { data, isLoading, isError, refetch } = useTours(filters);
 
   const setParam = (key: string, value: string | null) => {
     const params = new URLSearchParams(sp.toString());
@@ -98,9 +59,42 @@ export default function PackageGrid() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div>
+        <div className="mb-6 flex justify-end">
+          <div className="h-9 w-36 animate-pulse rounded-full bg-black/[0.06]" />
+        </div>
+        <TourGridSkeleton count={PAGE_SIZE} />
+      </div>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="grid place-items-center rounded-3xl border border-dashed border-rose-200 bg-rose-50/30 py-20 text-center">
+        <p className="text-lg font-semibold text-rose-700">
+          We couldn&apos;t load tours right now.
+        </p>
+        <p className="mt-1 text-sm text-rose-500/80">
+          Please check your connection and try again.
+        </p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-5 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-primary-dark"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  const { items, total, totalPages, page } = data;
+  const sort = filters.sort ?? "popular";
+
   return (
     <div>
-      {/* Result bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[#8e8e8e]">
           Showing <span className="font-semibold text-ink">{items.length}</span> of{" "}
@@ -110,7 +104,9 @@ export default function PackageGrid() {
           Sort:
           <select
             value={sort}
-            onChange={(e) => setParam("sort", e.target.value === "popular" ? null : e.target.value)}
+            onChange={(e) =>
+              setParam("sort", e.target.value === "popular" ? null : e.target.value)
+            }
             className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-ink outline-none transition-colors hover:border-navy/30 focus:border-navy/40"
           >
             <option value="popular">Popular</option>
@@ -139,7 +135,7 @@ export default function PackageGrid() {
         </div>
       ) : (
         <motion.div
-          key={`${q}-${cats.join()}-${dests.join()}-${minRating}-${maxPrice}-${sort}-${page}`}
+          key={`${sp.toString()}-${page}`}
           variants={grid}
           initial="hidden"
           animate="show"
@@ -166,10 +162,10 @@ export default function PackageGrid() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
                 <span
                   className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur ${
-                    p.badge.tone === "discount" ? "bg-primary text-black" : "bg-white/90 text-navy"
+                    p.badgeTone === "discount" ? "bg-primary text-black" : "bg-white/90 text-navy"
                   }`}
                 >
-                  {p.badge.label}
+                  {p.badgeLabel}
                 </span>
                 <span className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-white/90 text-ink/70 shadow-sm backdrop-blur transition-colors group-hover:text-rose-500">
                   <IconHeart className="size-[18px]" stroke={1.8} />
