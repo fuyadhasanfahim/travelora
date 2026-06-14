@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Section, Text } from "@react-email/components";
-import { BrandLayout, Detail } from "./_layout";
+import { BrandLayout, BodyText, SummaryCard, Detail } from "./_layout";
 
 export type AdminBookingNotificationProps = {
   reference: string;
@@ -27,9 +26,9 @@ export default function AdminBookingNotification({
     <BrandLayout
       preview={`New booking ${reference} — ${customer}`}
       title="New booking received"
+      intro={`Reference ${reference} just landed in the system.`}
     >
-      <Text>A new booking just landed in the system.</Text>
-      <Section className="my-4 rounded-xl bg-[#f6f7fb] p-4">
+      <SummaryCard title="Booking">
         <Detail label="Reference" value={reference} />
         <Detail label="Tour" value={tourTitle} />
         <Detail label="Customer" value={customer} />
@@ -38,7 +37,12 @@ export default function AdminBookingNotification({
         <Detail label="Start" value={startDate} />
         <Detail label="Travellers" value={travellers} />
         <Detail label="Total" value={`$${total}`} />
-      </Section>
+      </SummaryCard>
+
+      <BodyText>
+        Confirm availability with the local partner and update the booking
+        status when ready.
+      </BodyText>
     </BrandLayout>
   );
 }

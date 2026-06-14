@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import {
@@ -13,12 +14,12 @@ import {
   IconCurrencyDollar,
   IconArrowRight,
 } from "@tabler/icons-react";
-import Link from "next/link";
 import Select from "@/components/ui/select";
 import { useTours } from "@/lib/query/hooks";
 import { TourCardSkeleton } from "@/components/ui/skeleton";
 
 type Pkg = {
+  slug: string;
   image: string;
   title: string;
   location: string;
@@ -26,21 +27,24 @@ type Pkg = {
   rating: number;
   reviews: number;
   duration: string;
+  durationDays: number;
   group: string;
   price: number;
   oldPrice?: number;
   badge: { label: string; tone: "popular" | "discount" };
 };
 
-// Tours are now fetched from the API.
-
 const CATEGORY_OPTIONS = [
   { label: "All Categories", value: "all" },
   { label: "Adventure", value: "adventure" },
   { label: "Beach", value: "beach" },
+  { label: "City", value: "city" },
   { label: "Cultural", value: "cultural" },
   { label: "Cruise", value: "cruise" },
+  { label: "Desert", value: "desert" },
   { label: "Mountain", value: "mountain" },
+  { label: "Tropical", value: "tropical" },
+  { label: "Wildlife", value: "wildlife" },
 ];
 
 const DESTINATION_OPTIONS = [
@@ -51,6 +55,14 @@ const DESTINATION_OPTIONS = [
   { label: "Norway", value: "norway" },
   { label: "Peru", value: "peru" },
   { label: "Kenya", value: "kenya" },
+  { label: "Japan", value: "japan" },
+  { label: "Italy", value: "italy" },
+  { label: "Iceland", value: "iceland" },
+  { label: "Morocco", value: "morocco" },
+  { label: "Thailand", value: "thailand" },
+  { label: "Egypt", value: "egypt" },
+  { label: "Mexico", value: "mexico" },
+  { label: "Vietnam", value: "vietnam" },
 ];
 
 const DURATION_OPTIONS = [
@@ -64,7 +76,8 @@ const PRICE_OPTIONS = [
   { label: "Any Price", value: "all" },
   { label: "Under $600", value: "u600" },
   { label: "$600 – $800", value: "600-800" },
-  { label: "$800 & above", value: "800+" },
+  { label: "$800 – $1500", value: "800-1500" },
+  { label: "$1500 & above", value: "1500+" },
 ];
 
 const cardVariant: Variants = {
@@ -80,10 +93,24 @@ export default function PopularPackages() {
     price: "all",
   });
 
-  const { data, isLoading } = useTours({ pageSize: 24 });
+  // Push category, destination, maxPrice down to the API so it filters the
+  // entire dataset — not just the slice we happen to have loaded.
+  const apiMaxPrice = (() => {
+    if (filters.price === "u600") return 599;
+    if (filters.price === "600-800") return 800;
+    if (filters.price === "800-1500") return 1500;
+    return undefined;
+  })();
+
+  const { data, isLoading } = useTours({
+    pageSize: 24,
+    category: filters.category !== "all" ? filters.category : undefined,
+    destination: filters.destination !== "all" ? filters.destination : undefined,
+    maxPrice: apiMaxPrice,
+  });
 
   const visible = useMemo<Pkg[]>(() => {
-    const items = (data?.items ?? []).map((t): Pkg & { slug: string } => ({
+    const items = (data?.items ?? []).map((t): Pkg => ({
       slug: t.slug,
       image: t.image,
       title: t.title,
@@ -92,6 +119,7 @@ export default function PopularPackages() {
       rating: t.rating,
       reviews: t.reviews,
       duration: t.durationLabel,
+      durationDays: t.durationDays,
       group: t.groupSize,
       price: t.price,
       oldPrice: t.oldPrice ?? undefined,
@@ -101,23 +129,35 @@ export default function PopularPackages() {
       },
     }));
 
-    return items.filter((p) => {
-      if (filters.category !== "all" && p.category.toLowerCase() !== filters.category) return false;
-      if (filters.destination !== "all" && !p.location.toLowerCase().includes(filters.destination)) return false;
-      if (filters.duration !== "all") {
-        const days = parseInt(p.duration, 10);
-        if (filters.duration === "short" && days > 3) return false;
-        if (filters.duration === "mid" && (days < 4 || days > 6)) return false;
-        if (filters.duration === "long" && days < 7) return false;
-      }
-      if (filters.price !== "all") {
-        if (filters.price === "u600" && p.price >= 600) return false;
-        if (filters.price === "600-800" && (p.price < 600 || p.price > 800)) return false;
-        if (filters.price === "800+" && p.price < 800) return false;
-      }
-      return true;
-    }).slice(0, 6);
+    return items
+      .filter((p) => {
+        // Duration is a derived field (durationDays); filter client-side.
+        if (filters.duration !== "all") {
+          const days = p.durationDays;
+          if (filters.duration === "short" && days > 3) return false;
+          if (filters.duration === "mid" && (days < 4 || days > 6)) return false;
+          if (filters.duration === "long" && days < 7) return false;
+        }
+        // Lower bound of the "600-800" / "800-1500" buckets — API only
+        // enforced the upper bound.
+        if (filters.price === "600-800" && p.price < 600) return false;
+        if (filters.price === "800-1500" && p.price < 800) return false;
+        if (filters.price === "1500+" && p.price < 1500) return false;
+        return true;
+      })
+      .slice(0, 6);
   }, [data, filters]);
+
+  // Build the "View all" link with the current filter context so the
+  // /tours page opens pre-filtered with the same view.
+  const exploreHref = useMemo(() => {
+    const sp = new URLSearchParams();
+    if (filters.category !== "all") sp.set("category", filters.category);
+    if (filters.destination !== "all") sp.set("destination", filters.destination);
+    if (apiMaxPrice) sp.set("maxPrice", String(apiMaxPrice));
+    const qs = sp.toString();
+    return qs ? `/tours?${qs}` : "/tours";
+  }, [filters, apiMaxPrice]);
 
   return (
     <section className="bg-[#fafafa] py-16 sm:py-20 lg:py-24">
@@ -188,21 +228,33 @@ export default function PopularPackages() {
               <TourCardSkeleton key={i} />
             ))}
           </div>
+        ) : visible.length === 0 ? (
+          <div className="mt-12 grid place-items-center rounded-3xl border border-dashed border-black/15 bg-white py-20 text-center">
+            <p className="text-lg font-semibold text-[#6e6e6e]">
+              No packages match these filters yet.
+            </p>
+            <p className="mt-1 text-sm text-[#9a9a9a]">
+              Try widening your price range or removing a category.
+            </p>
+            <button
+              type="button"
+              onClick={() =>
+                setFilters({ category: "all", destination: "all", duration: "all", price: "all" })
+              }
+              className="mt-5 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-primary-dark"
+            >
+              Clear filters
+            </button>
+          </div>
         ) : (
           <motion.div
             layout
             className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-8"
           >
             {visible.map((p) => (
-              <PackageCard key={p.title} pkg={p} />
+              <PackageCard key={p.slug} pkg={p} />
             ))}
           </motion.div>
-        )}
-
-        {visible.length === 0 && (
-          <p className="mt-12 text-center text-base text-[#9a9a9a]">
-            No packages match these filters yet — try widening your search.
-          </p>
         )}
 
         {/* Load more */}
@@ -215,7 +267,7 @@ export default function PopularPackages() {
             className="mt-12 flex justify-center"
           >
             <Link
-              href="/tours"
+              href={exploreHref}
               className="group inline-flex items-center gap-2 rounded-full bg-navy px-9 py-3.5 text-base font-medium text-white shadow-[0_12px_28px_rgba(0,28,142,0.25)] transition-all hover:-translate-y-0.5 hover:bg-navy/90"
             >
               Explore All Packages
@@ -241,8 +293,15 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
       viewport={{ once: true, amount: 0.2 }}
       whileHover={{ y: -10 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_10px_40px_-18px_rgba(0,0,0,0.25)] ring-1 ring-black/[0.04] transition-shadow duration-300 hover:shadow-[0_28px_60px_-20px_rgba(0,0,0,0.3)]"
+      className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_10px_40px_-18px_rgba(0,0,0,0.25)] ring-1 ring-black/[0.04] transition-shadow duration-300 hover:shadow-[0_28px_60px_-20px_rgba(0,0,0,0.3)]"
     >
+      {/* Whole-card link → tour detail */}
+      <Link
+        href={`/tours/${pkg.slug}`}
+        aria-label={pkg.title}
+        className="absolute inset-0 z-10"
+      />
+
       {/* Image */}
       <div className="relative aspect-[397/269] w-full overflow-hidden">
         <Image
@@ -257,24 +316,22 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
         {/* Badge */}
         <span
           className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur ${
-            pkg.badge.tone === "discount"
-              ? "bg-primary text-black"
-              : "bg-white/90 text-navy"
+            pkg.badge.tone === "discount" ? "bg-primary text-black" : "bg-white/90 text-navy"
           }`}
         >
           {pkg.badge.label}
         </span>
 
-        {/* Wishlist */}
+        {/* Wishlist (above the overlay link) */}
         <button
           type="button"
           aria-label="Save to wishlist"
-          className="absolute right-4 top-4 grid size-9 place-items-center rounded-full bg-white/90 text-ink/70 shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-rose-500"
+          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-white/90 text-ink/70 shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-rose-500"
         >
           <IconHeart className="size-[18px]" stroke={1.8} />
         </button>
 
-        {/* Category + location on image */}
+        {/* Category + location */}
         <div className="absolute inset-x-4 bottom-3 flex items-center justify-between gap-2">
           <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-navy backdrop-blur">
             {pkg.category}
@@ -326,12 +383,14 @@ function PackageCard({ pkg }: { pkg: Pkg }) {
               <span className="text-sm font-normal text-[#a1a1a1]">/ person</span>
             </p>
           </div>
-          <button
-            type="button"
-            className="shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black shadow-[0_8px_18px_-8px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
+          {/* Book Now → checkout (sits above the whole-card link via z-20) */}
+          <Link
+            href={`/booking?tour=${pkg.slug}&adult=2&child=1&extra=0`}
+            aria-label={`Book ${pkg.title}`}
+            className="relative z-20 shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-black shadow-[0_8px_18px_-8px_rgba(254,188,18,0.9)] transition-all hover:-translate-y-0.5 hover:bg-primary-dark"
           >
             Book Now
-          </button>
+          </Link>
         </div>
       </div>
     </motion.article>

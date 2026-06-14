@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Section, Text } from "@react-email/components";
-import { BrandLayout, Detail } from "./_layout";
+import { BrandLayout, BodyText, SummaryCard, Detail, CtaButton } from "./_layout";
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelora.app";
 
 export type BookingReceivedProps = {
   firstName: string;
@@ -20,23 +21,23 @@ export default function BookingReceived({
   return (
     <BrandLayout
       preview={`We've received your booking, ${firstName} — ref ${reference}`}
-      title={`Thanks, ${firstName} — we've received your booking`}
+      title={`Thanks, ${firstName} — your booking is in.`}
+      intro="Our team is checking availability now. We'll confirm everything by email within 24 hours."
     >
-      <Text>
-        We've received your booking request and will confirm it within 24 hours
-        after a quick availability check. Your booking reference is{" "}
-        <strong>{reference}</strong>.
-      </Text>
-      <Section className="my-4 rounded-xl bg-[#f6f7fb] p-4">
+      <BodyText>
+        Here&apos;s the snapshot we have so far. If anything looks off, just reply
+        to this email and we&apos;ll sort it out.
+      </BodyText>
+
+      <SummaryCard title="Booking summary">
+        <Detail label="Reference" value={reference} />
         <Detail label="Tour" value={tourTitle} />
         <Detail label="Start date" value={startDate} />
         <Detail label="Total" value={`$${total}`} />
         <Detail label="Status" value="Pending confirmation" />
-      </Section>
-      <Text>
-        Need to change anything? Just reply to this email and our team will help
-        you adjust your trip.
-      </Text>
+      </SummaryCard>
+
+      <CtaButton href={`${SITE}/tours`}>Explore more journeys</CtaButton>
     </BrandLayout>
   );
 }

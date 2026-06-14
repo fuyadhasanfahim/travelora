@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Section, Text } from "@react-email/components";
-import { BrandLayout, Detail } from "./_layout";
+import { BrandLayout, BodyText, SummaryCard, Detail, CtaButton } from "./_layout";
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelora.app";
 
 export type PaymentReceiptProps = {
   firstName: string;
@@ -22,20 +23,23 @@ export default function PaymentReceipt({
   return (
     <BrandLayout
       preview={`Payment received — receipt ${paymentRef}`}
-      title={`We've received your payment, ${firstName}`}
+      title={`Payment received, ${firstName}.`}
+      intro="Your booking is now confirmed. This is your official receipt — keep it for your records."
     >
-      <Text>This email confirms that your payment was successfully processed.</Text>
-      <Section className="my-4 rounded-xl bg-[#f6f7fb] p-4">
-        <Detail label="Receipt" value={paymentRef} />
-        <Detail label="Booking" value={bookingRef} />
+      <SummaryCard title="Receipt">
+        <Detail label="Receipt #" value={paymentRef} />
+        <Detail label="Booking #" value={bookingRef} />
         <Detail label="Tour" value={tourTitle} />
         <Detail label="Method" value={method.toUpperCase()} />
         <Detail label="Amount" value={`$${amount}`} />
-      </Section>
-      <Text>
-        Your booking is now confirmed. We'll be in touch closer to your departure
-        date with final details.
-      </Text>
+      </SummaryCard>
+
+      <BodyText>
+        We&apos;ll be in touch closer to your departure with the final trip
+        details. Until then — start dreaming.
+      </BodyText>
+
+      <CtaButton href={`${SITE}/tours`}>Browse another adventure</CtaButton>
     </BrandLayout>
   );
 }

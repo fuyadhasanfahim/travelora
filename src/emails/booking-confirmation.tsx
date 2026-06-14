@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Section, Text } from "@react-email/components";
-import { BrandLayout, Detail } from "./_layout";
+import { BrandLayout, BodyText, SummaryCard, Detail, CtaButton } from "./_layout";
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelora.app";
 
 export type BookingConfirmationProps = {
   firstName: string;
@@ -23,22 +24,23 @@ export default function BookingConfirmation({
     <BrandLayout
       preview={`Your Travelora booking is confirmed — ref ${reference}`}
       title={`You're going, ${firstName}!`}
+      intro="Your booking is confirmed. Get the camera ready — adventure unlocked."
     >
-      <Text>
-        Great news — your booking has been confirmed. We can't wait to see you
-        on this trip. Keep this email for your records.
-      </Text>
-      <Section className="my-4 rounded-xl bg-[#f6f7fb] p-4">
+      <BodyText>
+        Keep this email for your records. We&apos;ll send final logistics —
+        meeting point, guide contact, packing tips — about 7 days before
+        departure.
+      </BodyText>
+
+      <SummaryCard title="Trip details">
         <Detail label="Booking ref" value={reference} />
         <Detail label="Tour" value={tourTitle} />
         <Detail label="Start date" value={startDate} />
         <Detail label="Travellers" value={travellers} />
         <Detail label="Total paid" value={`$${total}`} />
-      </Section>
-      <Text>
-        We'll send you final logistics — meeting point, guide contact and
-        packing notes — 7 days before departure.
-      </Text>
+      </SummaryCard>
+
+      <CtaButton href={`${SITE}/tours`}>Plan your next escape</CtaButton>
     </BrandLayout>
   );
 }

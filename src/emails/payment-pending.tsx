@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Section, Text } from "@react-email/components";
-import { BrandLayout, Detail } from "./_layout";
+import { BrandLayout, BodyText, SummaryCard, Detail } from "./_layout";
 
 export type PaymentPendingProps = {
   firstName: string;
@@ -18,21 +17,20 @@ export default function PaymentPending({
   return (
     <BrandLayout
       preview={`Payment pending for booking ${bookingRef}`}
-      title={`Hold tight, ${firstName} — payment pending`}
+      title={`Hold tight, ${firstName}.`}
+      intro="We've recorded your payment intent and are waiting for the funds to clear. Bank transfers usually take 1–2 business days."
     >
-      <Text>
-        We've recorded your payment intent and are waiting for the funds to
-        clear. This usually takes 1-2 business days for bank transfers.
-      </Text>
-      <Section className="my-4 rounded-xl bg-[#f6f7fb] p-4">
+      <SummaryCard title="Pending payment">
         <Detail label="Payment ref" value={paymentRef} />
         <Detail label="Booking ref" value={bookingRef} />
         <Detail label="Method" value={method.toUpperCase()} />
-      </Section>
-      <Text>
-        We'll email you again as soon as your payment is confirmed. No action
-        needed from you for now.
-      </Text>
+        <Detail label="Status" value="Pending" />
+      </SummaryCard>
+
+      <BodyText>
+        No action needed from your side for now — we&apos;ll email you again as
+        soon as the payment clears and your booking is confirmed.
+      </BodyText>
     </BrandLayout>
   );
 }
