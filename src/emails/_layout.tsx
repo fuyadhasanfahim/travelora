@@ -18,7 +18,7 @@ import {
   Column,
 } from "@react-email/components";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelora.app";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL!;
 
 const BRAND = {
   navy: "#001c8e",

@@ -21,7 +21,7 @@ const serverSchema = z.object({
 });
 
 const clientSchema = z.object({
-  NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_SITE_URL: z.string().url().default(process.env.NEXT_PUBLIC_SITE_URL!),
   NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: z.string().optional().default(""),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional().default(""),
   NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: z.string().optional().default(""),
@@ -58,7 +58,7 @@ const isServer = typeof window === "undefined";
 export const env = isServer
   ? { ...parseServer(), ...parseClient() }
   : ({
-      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL!,
       NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY:
         process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY ?? "",
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:

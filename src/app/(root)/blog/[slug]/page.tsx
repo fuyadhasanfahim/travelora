@@ -5,7 +5,7 @@ import BlogDetail from "@/components/blog/blog-detail";
 import { prisma } from "@/lib/db";
 import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL!;
 
 type Params = { params: Promise<{ slug: string }> };
 

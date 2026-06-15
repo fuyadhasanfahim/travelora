@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const base = process.env.NEXT_PUBLIC_SITE_URL!;
   const [tours, blogs] = await Promise.all([
     prisma.tour.findMany({ select: { slug: true, updatedAt: true } }),
     prisma.blog.findMany({ select: { slug: true, updatedAt: true } }),
