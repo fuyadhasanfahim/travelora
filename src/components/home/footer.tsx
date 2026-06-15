@@ -138,7 +138,17 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-6 sm:flex-row">
           <p className="text-sm text-[#c2cdf8]">
-            ©2026 Travelora, All Rights Reserved, Design and Develop by Webbriks
+            ©2026 Travelora, All Rights Reserved, Design and Develop by{" "}
+            <a
+              href="https://webbriks.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Visit Webbriks Agency"
+              className="group relative inline-block font-semibold text-amber-soft transition-colors hover:text-white"
+            >
+              Webbriks
+              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-amber-soft transition-all duration-300 group-hover:w-full group-hover:bg-white" />
+            </a>
           </p>
           <button
             type="button"
