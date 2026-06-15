@@ -10,6 +10,6 @@ export function getResend(): Resend | null {
   return cached;
 }
 
-export const FROM = process.env.RESEND_FROM_EMAIL ?? "Travelora <noreply@travelora.app>";
-export const REPLY_TO = process.env.RESEND_REPLY_TO ?? "support@travelora.app";
-export const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL ?? "admin@travelora.app";
+export const FROM = process.env.RESEND_FROM_EMAIL!;
+export const REPLY_TO = process.env.RESEND_REPLY_TO!;
+export const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL!;
